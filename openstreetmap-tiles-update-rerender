@@ -17,7 +17,7 @@ cd /home/renderaccount/src/mod_tile/
 #------------------------------------------------------------------------------
 OSMOSIS_BIN=osmosis
 OSM2PGSQL_BIN=osm2pgsql
-OSM2PGSQL_OPTIONS="--tag-transform-script /home/renderaccount/src/SomeoneElse-style/style.lua"
+OSM2PGSQL_OPTIONS="-d gis --tag-transform-script /home/renderaccount/src/SomeoneElse-style/style.lua"
 #OSM2PGSQL_OPTIONS="--flat-nodes /path/to/flatnodes --hstore"
 
 BASE_DIR=/var/lib/mod_tile
@@ -106,6 +106,8 @@ if [ $# -eq 1 ] ; then
     mkdir $WORKOSM_DIR
     $OSMOSIS_BIN --read-replication-interval-init workingDirectory=$WORKOSM_DIR 1>&2 2> "$OSMOSISLOG"
     wget "http://replicate-sequences.osm.mazdermind.de/?"$1"T00:00:00Z" -O $WORKOSM_DIR/state.txt
+    mv $WORKOSM_DIR/configuration.txt $WORKOSM_DIR/configuration_orig.txt
+    sed "s!baseUrl=http://planet.openstreetmap.org/replication/minute!baseUrl=https://planet.openstreetmap.org/replication/minute!" $WORKOSM_DIR/configuration_orig.txt > $WORKOSM_DIR/configuration.txt
 else
 # make sure the lockfile is removed when we exit and then claim it
 
